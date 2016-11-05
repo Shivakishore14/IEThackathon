@@ -6,7 +6,7 @@
 	<script src="js/jquery.js"></script>
 	<script src="js/script.js"></script>
 	<script src="js/bootstrap.min.js" type="text/javascript"></script>
-
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
     <!--fonts-->
     <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
@@ -28,7 +28,7 @@
    <div id="selection">
 <button id="demo-menu-lower-right"
         class="mdl-button mdl-js-button ">
-        <span>User</span>
+        <span id="user">User</span>
 </button>
 
 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
@@ -77,9 +77,22 @@
 </div>
 <br>
   <center>
-    <button type="button" class="btn" id="btnLogin">Submit</button>
-    <button type="button" class="btn"  id="btnCancel">Cancel</button>
+    <button type="button" class="btn" onclick="done()" id="btnLogin">Submit</button>
+    <button type="button" class="btn"  id="btnReload">Reload</button>
   </center>
+  <h1><time>00:00:00</time></h1>
+  <div id="notification" class="container-fluid">
+      <div class="row">
+          <div class="col-md-4"></div>
+          <div class="col-md-4" id="notificationArea"></div>
+          <div class="col-md-4"></div>
+      </div>
+   </div>
+   <button id="start" class="hide"></button>
+   <button id="stop" class="hide"></button>
+   <button id="clear" class="hide"></button>
+
+
 </body>
 <style>
 #tileInnerOuter{
@@ -97,7 +110,7 @@
   margin-left:1080px;
 
 }
-label{
+label,h1{
 
 font-size: 20px;
 }
@@ -110,26 +123,26 @@ body{
   background-color: #00BCD4;
 }
 #navDivision{
-width: 100% !important;
-height: 50px;
-background-color:#778899;
-padding-top: 10px;
-padding-left: 60px;
-font-family: 'Pacifico', cursive;
-font-size: 30px;
-margin:0 auto;
+    width: 100% !important;
+    height: 50px;
+    background-color:#778899;
+    padding-top: 10px;
+    padding-left: 60px;
+    font-family: 'Pacifico', cursive;
+    font-size: 30px;
+    margin:0 auto;
 }
-  #selection{
-			padding-left: 985px;
-			padding-bottom: 20px;
+#selection{
+	padding-left: 985px;
+	padding-bottom: 20px;
 
-		}
+}
 .btn{
-  background:#6E6E6E;
-  margin-top: 0px;
-  padding-left:40px;
-  padding-right:40px;
-  font-family: 'Pacifico', cursive;
+    background:#6E6E6E;
+    margin-top: 0px;
+    padding-left:40px;
+    padding-right:40px;
+    font-family: 'Pacifico', cursive;
 }
   #tileRoot{
     margin:0 auto;
@@ -147,23 +160,62 @@ margin:0 auto;
     .red {
         box-shadow: inset 0 0 0 1000px rgba(0,0,0,.9);
     }
+    #notification{
+    	height:20px;
+    	position:fixed;
+    	bottom:0%;
+    	width:100%;
+    	display:none;
+    	z-index:15;
+    	opacity:0.8;
+    }
+    #notificationArea{
+    	background-color:#222;
+    	color:#FFF;
+    	size:15px;
+    	text-align: center;
+    	border-radius: 10px 10px 0px 0px;
+    	font-size: 20px;
+    }
+    #hide{
+        display:none;
+    }
+    #toggle {
+        width: 100px;
+        height: 100px;
+        background: #ccc;
+        position: relative;
+    }
 </style>
 <script>
 //alert(getCookie("User"));
 //validate();
 var uname = getCookie("User");
+$("#user").html(uname);
 var pass = "sp"
 var ans = new Array();
 var c = 0;
 var Cans;
-$.post("/seq",{uname:uname},function(result){
-        //alert(result);
-        seq(result);
+var points=0;
+setTimeout(startFun,1000);
+function startFun(){
+    $("#btnReload").trigger("click");
+}
+$("#btnReload").on("click", function(){
+    stopTime();
+    $.post("/seq",{uname:uname},function(result){
+            //alert(result);
+            seq(result);
+    });
+});
+$("#logout").on("click",function(){
+    window.location = "index.html";
 });
 function seq(a){
     c = 0;
     var s = JSON.parse(a);
     console.log(s);
+    $("#disp").html(s.length);
     Cans = s;
     showTile();
     /*for ( i in s ){
@@ -174,10 +226,17 @@ function tileclicked(a){
     var id = a.getAttribute("id");
     $("#"+id).addClass("red");
     //alert(id.charAt(1));
-    ans.push(Number(id.charAt(1)));
+    var last = ans.pop();
+    var now = Number(id.charAt(1));
+    if (last != now && typeof last != 'undefined'){
+        ans.push(last);
+    }
+    ans.push(now);
     console.log(ans)
 }
 function done(){
+    var p = points;
+    stopTime();
     flag = true;
     $(".tile").removeClass("red");
     if (ans.length == Cans.length){
@@ -189,16 +248,19 @@ function done(){
     }else{
         flag = false;
     }
+    stopTime();
     if (flag){
         ans = [];
-        $.post("/sus",{uname:uname,level:Cans.length},function(result){
+        $.post("/sus",{uname:uname,level:Cans.length,pts:p},function(result){
                 Cans = [];
-                seq(result);
+                //seq(result);
         });
-        alert("s");
+        notify("Correct");
     }else{
-        alert("wrong");
+        notify("Wrong");
     }
+    ans = [];
+    setTimeout(startFun, 1000);
 }
 
 function showTile(){
@@ -209,7 +271,62 @@ function showTile(){
         setTimeout(showTile, 500);
     }else{
         $(".tile").removeClass("red");
+        stopTime();
+        clearTime();
+        timer();
     }
+
 }
+
+
+
+
+var h1 = document.getElementsByTagName('h1')[0],
+    start = document.getElementById('start'),
+    stop = document.getElementById('stop'),
+    clear = document.getElementById('clear'),
+    seconds = 0, minutes = 0, hours = 0,
+    t;
+
+function add() {
+    points++;
+    seconds++;
+    if (seconds >= 60) {
+        seconds = 0;
+        minutes++;
+        if (minutes >= 60) {
+            minutes = 0;
+            hours++;
+        }
+    }
+
+    h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+
+    timer();
+}
+function timer() {
+    t = setTimeout(add, 1000);
+}
+
+
+
+/* Start button */
+start.onclick = timer;
+
+/* Stop button */
+stop.onclick =  stopTime;
+function stopTime()  {
+    points = 0;
+    clearTimeout(t);
+}
+
+/* Clear button */
+clear.onclick = clearTime();
+function clearTime() {
+    points = 0;
+    h1.textContent = "00:00:00";
+    seconds = 0; minutes = 0; hours = 0;
+}
+
 </script>
 </html>

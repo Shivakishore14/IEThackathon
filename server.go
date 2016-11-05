@@ -35,7 +35,7 @@ func regHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "registered already")
 		return
 	}
-	_, e := db.Exec("insert into user values(?,?,'0')", username, pass)
+	_, e := db.Exec("insert into user values(?,?,'0','N/A')", username, pass)
 	if e != nil {
 		log.Println(e)
 		fmt.Fprintf(w, "error")
@@ -65,14 +65,14 @@ func seqHandler(w http.ResponseWriter, r *http.Request) {
 func susHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("uname")
 	level := r.FormValue("level")
-
+	timePts := r.FormValue("pts")
 	db, err := sql.Open("mysql", user+":"+password+"@/"+database)
 	if err = db.Ping(); err != nil {
 		log.Print(err)
 		return
 	}
 	defer db.Close()
-	_, e := db.Exec("UPDATE user SET level = ? WHERE uname = ?", level, username)
+	_, e := db.Exec("UPDATE user SET level = ? , time = ? WHERE uname = ?", level, timePts, username)
 
 	if e != nil {
 		fmt.Fprintf(w, "some error occured")
