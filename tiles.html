@@ -1,19 +1,23 @@
 <html>
+<head>
+    <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
+</head>
 <body>
     <div id="tileRoot">
-        <div class="tile" id="t0"></div>
-        <div class="tile" id="t1"></div>
-        <div class="tile" id="t2"></div>
+        <div class="tile" id="t0" onclick="tileclicked(this)"></div>
+        <div class="tile" id="t1" onclick="tileclicked(this)"></div>
+        <div class="tile" id="t2" onclick="tileclicked(this)"></div>
         <br>
-        <div class="tile" id="t3"></div>
-        <div class="tile" id="t4"></div>
-        <div class="tile" id="t5"></div>
+        <div class="tile" id="t3" onclick="tileclicked(this)"></div>
+        <div class="tile" id="t4" onclick="tileclicked(this)"></div>
+        <div class="tile" id="t5" onclick="tileclicked(this)"></div>
         <br>
-        <div class="tile" id="t6"></div>
-        <div class="tile" id="t7"></div>
-        <div class="tile" id="t8"></div>
+        <div class="tile" id="t6" onclick="tileclicked(this)"></div>
+        <div class="tile" id="t7" onclick="tileclicked(this)"></div>
+        <div class="tile" id="t8" onclick="tileclicked(this)"></div>
 
     </div>
+    <button onclick="done()">done</button>
 </body>
 <style>
     .tile{
@@ -22,5 +26,69 @@
         background-color: #de2;
         margin: 2px;
     }
+     .red {
+         background-color: #d12;
+     }
 </style>
+<script>
+    var uname = "sk";
+    var pass = "sp"
+    var ans = new Array();
+    var c = 0;
+    var Cans;
+    $.post("/seq",{uname:uname},function(result){
+			//alert(result);
+            seq(result);
+	});
+    function seq(a){
+        c = 0;
+        var s = JSON.parse(a);
+        console.log(s);
+        Cans = s;
+        showTile();
+        /*for ( i in s ){
+            $("#t"+s[i]).addClass("red");
+        }*/
+    }
+    function tileclicked(a){
+        var id = a.getAttribute("id");
+        //alert(id.charAt(1));
+        ans.push(Number(id.charAt(1)));
+        console.log(ans)
+    }
+    function done(){
+        flag = true;
+        $(".tile").removeClass("red");
+        if (ans.length == Cans.length){
+            for( i in ans){
+                if(ans[i] != Cans[i]){
+                    flag = false;
+                }
+            }
+        }else{
+            flag = false;
+        }
+        if (flag){
+            ans = [];
+            $.post("/sus",{uname:uname,level:Cans.length},function(result){
+                    Cans = [];
+        			seq(result);
+        	});
+            alert("s");
+        }else{
+            alert("wrong");
+        }
+    }
+
+    function showTile(){
+        if (c < Cans.length){
+            $(".tile").removeClass("red");
+            $("#t"+Cans[c]).addClass("red");
+            c = c + 1;
+            setTimeout(showTile, 3000);
+        }else{
+            $(".tile").removeClass("red");
+        }
+    }
+</script>
 </html>
