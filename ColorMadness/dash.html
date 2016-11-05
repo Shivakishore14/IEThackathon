@@ -6,7 +6,6 @@
 	<script src="js/jquery.js"></script>
 	<script src="js/script.js"></script>
 	<script src="js/bootstrap.min.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/smoothness/jquery-ui.css">
     <!--fonts-->
     <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
@@ -34,7 +33,7 @@
 <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
     for="demo-menu-lower-right">
   <li class="mdl-menu__item" id="logout"><a href="index.html">Logout</a></li>
-  <li class="mdl-menu__item">Score</li>
+  <li class="mdl-menu__item" data-toggle="modal" data-target="#myModal" onclick="lb()">LeaderBoard</li>
 </ul>
 </div>
 <!--menu -->
@@ -51,6 +50,7 @@
   <div id="tileOuter" class="row">
     <div class="col-md-4"></div>
     <div id="tileRoot" class="col-md-4">
+		<center><h1 id="stw"><time>00:00:00</time></h1></center>
       <div class="container" id="tileInnerOuter">
         <div class="container">
       <div class="row row-centered">
@@ -80,7 +80,6 @@
     <button type="button" class="btn" onclick="done()" id="btnLogin">Submit</button>
     <button type="button" class="btn"  id="btnReload">Reload</button>
   </center>
-  <h1><time>00:00:00</time></h1>
   <div id="notification" class="container-fluid">
       <div class="row">
           <div class="col-md-4"></div>
@@ -92,7 +91,31 @@
    <button id="stop" class="hide"></button>
    <button id="clear" class="hide"></button>
 
+<!-- Modal -->
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" id="modalbtn">
+  Launch demo modal
+</button>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Leader Board</h4>
+      </div>
+      <div class="modal-body" id="modalBody">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 <style>
 #tileInnerOuter{
@@ -146,7 +169,7 @@ body{
 }
   #tileRoot{
     margin:0 auto;
-    margin-top: 80px;
+    margin-top: 0px;
     padding:30px;
     margin-left:-50px;
   }
@@ -177,7 +200,7 @@ body{
     	border-radius: 10px 10px 0px 0px;
     	font-size: 20px;
     }
-    #hide{
+    #hide, #modalbtn{
         display:none;
     }
     #toggle {
@@ -186,6 +209,12 @@ body{
         background: #ccc;
         position: relative;
     }
+	#modalTable{
+		width:100%;
+	}
+	#stw{
+		padding-left: 88px;
+	}
 </style>
 <script>
 //alert(getCookie("User"));
@@ -327,6 +356,35 @@ function clearTime() {
     h1.textContent = "00:00:00";
     seconds = 0; minutes = 0; hours = 0;
 }
-
+function lb(){
+	//modalBody
+	notify("Sa");
+	s = `
+	<table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" id="modalTable">
+	  <thead>
+	    <tr>
+	      <th class="mdl-data-table__cell--non-numeric">User</th>
+	      <th>Level</th>
+	      <th>Time Taken</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	`
+	$.post("/lb",{},function(result){
+		obj = JSON.parse(result);
+		for (i in obj){
+			obj[i].uname
+			s = s + `
+			<tr>
+			  <td class="mdl-data-table__cell--non-numeric">`+obj[i].uname+`</td>
+			  <td>`+obj[i].level+`</td>
+			  <td>`+obj[i].points+`</td>
+			</tr>
+			`;
+		}
+		s = s + `</tbody></table>`;
+		$("#modalBody").html(s);
+    });
+}
 </script>
 </html>
