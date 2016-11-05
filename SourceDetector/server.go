@@ -1,19 +1,20 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
-	"strconv"
-	"io/ioutil"
-	"os/exec"
-	"bytes"
 	"os"
+	"os/exec"
+	"strconv"
 	"strings"
-	"bufio"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -84,102 +85,106 @@ func susHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, getSeq(username))
 }
+
 var javaFile string = ""
 var jFlag bool = false
+
 func codeHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.FormValue("code")
 	name := r.FormValue("name")
 	path := name // linux
-	
-	
+
 	err := ioutil.WriteFile(path+".c", []byte(code), 0777)
 	err = ioutil.WriteFile(path+".cpp", []byte(code), 0777)
 	err = ioutil.WriteFile(path+".rb", []byte(code), 0777)
 	err = ioutil.WriteFile(path+".py", []byte(code), 0777)
-	
+
 	if err != nil {
 		log.Print(err)
 		fmt.Fprintf(w, "error")
 		return
 	}
-	
-	
-	a := fun1("/usr/bin/gcc",path+".c")
-	if a == 1{
+
+	a := fun1("/usr/bin/gcc", path+".c")
+	if a == 1 {
 		fmt.Fprintf(w, "C")
-		return	
+		return
 	}
-	a = fun1("/usr/bin/g++",path+".cpp")
-	if a == 1{
+	a = fun1("/usr/bin/g++", path+".cpp")
+	if a == 1 {
 		fmt.Fprintf(w, "C++")
-		return	
+		return
 	}
-	a = fun1("/usr/bin/python",path+".py")
-	if a == 1{
+	a = fun1("/usr/bin/python", path+".py")
+	if a == 1 {
 		fmt.Fprintf(w, "python")
-		return	
+		return
 	}
-	a = fun1("/usr/bin/ruby",path+".rb")
-	if a == 1{
+	a = fun1("/usr/bin/ruby", path+".rb")
+	if a == 1 {
 		fmt.Fprintf(w, "ruby")
-		return	
-	}	
+		return
+	}
+	err = ioutil.WriteFile(path+".java", []byte(code), 0777)
 	jFlag = false
-	_ = renameFile(path+".java");
+	_ = renameFile(path + ".java")
 	if jFlag {
 		path = javaFile
-		fmt.Println("Applying file name to java-->",path)	
-	} 
+		fmt.Println("Applying file name to java-->", path)
+	}
 	err = ioutil.WriteFile(path+".java", []byte(code), 0777)
-	a = fun1("/usr/bin/javac",path+".java")
-	if a == 1{
+	a = fun1("/usr/bin/javac", path+".java")
+	if a == 1 {
 		fmt.Fprintf(w, "java")
-		return	
+		return
 	}
 	//fmt.Println(a,b, c)
 }
 
 /////////////////////////////////////////////
-func renameFile(s string) string{
+func renameFile(s string) string {
 	f, err := os.Open(s)
 	if err != nil {
-	    fmt.Println("error opening file= ",err)
-	    os.Exit(1)
+		fmt.Println("error opening file= ", err)
+		os.Exit(1)
 	}
 	r := bufio.NewReader(f)
 	s, e := Readln(r)
 	for e == nil {
-	    s,e = Readln(r)
-	    if s != "" {
-		k := strings.TrimSpace(s);
-		fmt.Println(k)
-		return strings.TrimSpace(s)
-	    }
+		s, e = Readln(r)
+		if s != "" {
+			k := strings.TrimSpace(s)
+			fmt.Println(k)
+			return strings.TrimSpace(s)
+		}
 	}
-	return "";
+	return ""
 }
 func Readln(r *bufio.Reader) (string, error) {
-  var (isPrefix bool = true
-       err error = nil
-       line, ln []byte
-      )
-  for isPrefix && err == nil {
-      line, isPrefix, err = r.ReadLine()
-      ln = append(ln, line...)
-  }
+	var (
+		isPrefix bool  = true
+		err      error = nil
+		line, ln []byte
+	)
+	for isPrefix && err == nil {
+		line, isPrefix, err = r.ReadLine()
+		ln = append(ln, line...)
+	}
 	//fmt.Println("-->",string(ln))
-	s:= string(ln)
-	if strings.Contains(s, "public class"){
-		s = strings.Replace(s, "public class" ,"", -1)
-		s = strings.Replace(s, "{" ,"", -1)
-		fmt.Println(s)
+	s := string(ln)
+	if strings.Contains(s, "public class") {
+		fmt.Println("Found public class")
+		s = strings.Replace(s, "public class", "", -1)
+		s = strings.Replace(s, "{", "", -1)
+		//fmt.Println(s)
+		fmt.Println("java file name found to be --> ", s)
 		javaFile = strings.TrimSpace(s)
 		jFlag = true
-		return s,err
-	    }
-  return "",err
+		return s, err
+	}
+	return "", err
 }
-func fun(p string,f string) int{
+func fun(p string, f string) int {
 	cmd := exec.Command("usr/bin/bash echo", f)
 	var out1 bytes.Buffer
 	cmd.Stdout = &out1
@@ -190,9 +195,9 @@ func fun(p string,f string) int{
 	fmt.Println(p, out1.String())
 	return len(out1.String())
 }
-func fun1(p string,f string) int{
+func fun1(p string, f string) int {
 	cmd, err1 := exec.Command(p, f).Output()
-	
+
 	if err1 != nil {
 		log.Print(err1)
 		return 0
@@ -266,6 +271,6 @@ func main() {
 	http.HandleFunc("/reg", regHandler)
 	http.HandleFunc("/seq", seqHandler)
 	http.HandleFunc("/sus", susHandler)
-	http.HandleFunc("/code", codeHandler) 
+	http.HandleFunc("/code", codeHandler)
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
