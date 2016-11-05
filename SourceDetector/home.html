@@ -46,7 +46,7 @@
       <div class = "form-group">
 
         <center>
-        <textarea class = "form-control xmlbox" rows="10">
+        <textarea class = "form-control xmlbox" rows="10" id="code">
 
         </textarea>
 
@@ -57,7 +57,7 @@
 
 <!-- Raised button with ripple -->
 <div class="container" id="disp">
-<center><button type="button" class="btn btn-success btn-lg "data-toggle="modal" data-target="#myModal">
+<center><button type="button" class="btn btn-success btn-lg "data-toggle="modal" data-target="#myModal" onclick="a()">
   Detect
 </button></center>
 </div>
@@ -78,7 +78,7 @@
         <div class="modal-body">
           The detected language is <span id="lang">loading</span>
         </div>
-        
+
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
@@ -141,4 +141,12 @@ body{
     resize: none;
 }
 </style>
+<script>
+function a(){
+    code = $("#code").val();
+    $.post("/code", { code:code, name:"test" }, function(result){
+            $("#lang").html(result);
+    });
+}
+</script>
 </html>

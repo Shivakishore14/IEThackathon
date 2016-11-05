@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<script src="jquery.js"></script>
+		<script src="js/jquery.js"></script>
 	</head>
 	<body>
 	<textarea id="code"></textarea>
@@ -11,7 +11,7 @@
 			code = $("#code").val();
 			$.post("/code", { code:code, name:"test" }, function(result){
         			alert(result);
-			});		
+			});
 		}
 	</script>
 <html>

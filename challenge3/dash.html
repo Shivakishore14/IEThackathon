@@ -19,84 +19,39 @@
     <script src="mdl/material.min.js"></script>
 </head>
 <body>
-
-<!--Nav bar-->
- <div id="navDivision">Color Madness
-
-   <!-- Right aligned menu below button -->
-   <div id="selection">
-<button id="demo-menu-lower-right"
-        class="mdl-button mdl-js-button ">
-        <span id="user">User</span>
-</button>
-
-<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-    for="demo-menu-lower-right">
-  <li class="mdl-menu__item" id="logout"><a href="index.html">Logout</a></li>
-  <li class="mdl-menu__item" data-toggle="modal" data-target="#myModal" onclick="lb()">LeaderBoard</li>
-</ul>
-</div>
-<!--menu -->
-    <!-- Display Level-->
-    <div id="display">
-      <span style="margin-top:-10px;color:black;font-weight:normal"><label>Level: <span id="disp">0</span></label></span>
-    </div>
-
-</div>
-
-<!--Nav bar ends-->
-
-<div id="outer" style="width:100%" class="container-fluid">
-  <div id="tileOuter" class="row">
-    <div class="col-md-4"></div>
-    <div id="tileRoot" class="col-md-4">
-		<center><h1 id="stw"><time>00:00:00</time></h1></center>
-      <div class="container" id="tileInnerOuter">
-        <div class="container">
-      <div class="row row-centered">
-        <div class="tile col-md-4 col-centered" id="t0" onclick="tileclicked(this)" style="background-color:red"></div>
-        <div class="tile col-md-4 col-centered" id="t1" onclick="tileclicked(this)" style="background-color:#26A69A"></div>
-        <div class="tile col-md-4 col-centered" id="t2" onclick="tileclicked(this)" style="background-color:brown"></div>
-      </div>
-      <div class="row row-centered">
-        <div class="tile col-md-4 col-centered" id="t3" onclick="tileclicked(this)" style="background-color:#2E7D32"></div>
-        <div class="tile col-md-4 col-centered" id="t4" onclick="tileclicked(this)" style="background-color:#EC407A"></div>
-        <div class="tile col-md-4 col-centered" id="t5" onclick="tileclicked(this)" style="background-color:#FB8C00"></div>
-      </div>
-      <div class="row row-centered">
-        <div class="tile col-md-4 col-centered" id="t6" onclick="tileclicked(this)" style="background-color:#FFC400"></div>
-        <div class="tile col-md-4 col-centered" id="t7" onclick="tileclicked(this)" style="background-color:darkblue"></div>
-        <div class="tile col-md-4 col-centered" id="t8" onclick="tileclicked(this)" style="background-color:#D500F9"></div>
-      </div>
-    </div>
-    </div>
-  </div>
-  </div>
-
-
-</div>
-<br>
-  <center>
-    <button type="button" class="btn" onclick="done()" id="btnLogin">Submit</button>
-    <button type="button" class="btn"  id="btnReload">Reload</button>
-  </center>
-  <div id="notification" class="container-fluid">
-      <div class="row">
-          <div class="col-md-4"></div>
-          <div class="col-md-4" id="notificationArea"></div>
-          <div class="col-md-4"></div>
-      </div>
-   </div>
-   <button id="start" class="hide"></button>
-   <button id="stop" class="hide"></button>
-   <button id="clear" class="hide"></button>
-
-<!-- Modal -->
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" id="modalbtn">
-  Launch demo modal
-</button>
-
+	<!-- The drawer is always open in large screens. The header is always shown,
+	  even in small screens. -->
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
+	            mdl-layout--fixed-header">
+	  <header class="mdl-layout__header">
+	    <div class="mdl-layout__header-row">
+	      <div class="mdl-layout-spacer"></div>
+	      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
+	                  mdl-textfield--floating-label mdl-textfield--align-right">
+	        <label class="mdl-button mdl-js-button mdl-button--icon"
+	               for="fixed-header-drawer-exp">
+	          <i class="material-icons">search</i>
+	        </label>
+	        <div class="mdl-textfield__expandable-holder">
+	          <input class="mdl-textfield__input" type="text" name="sample"
+	                 id="fixed-header-drawer-exp">
+	        </div>
+	      </div>
+	    </div>
+	  </header>
+	  <div class="mdl-layout__drawer">
+	    <span class="mdl-layout-title">Title</span>
+	    <nav class="mdl-navigation">
+	      <a class="mdl-navigation__link" href="">Link</a>
+	      <a class="mdl-navigation__link" href="">Link</a>
+	      <a class="mdl-navigation__link" href="">Link</a>
+	      <a class="mdl-navigation__link" href="">Link</a>
+	    </nav>
+	  </div>
+	  <main class="mdl-layout__content">
+	    <div class="page-content"><!-- Your content goes here --></div>
+	  </main>
+	</div>
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
