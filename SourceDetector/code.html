@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<script src="jquery.js"></script>
+	</head>
+	<body>
+	<textarea id="code"></textarea>
+	<button onclick="a()">submit</button>
+	</body>
+	<script>
+		function a(){
+			code = $("#code").val();
+			$.post("/code", { code:code, name:"test" }, function(result){
+        			alert(result);
+			});		
+		}
+	</script>
+<html>

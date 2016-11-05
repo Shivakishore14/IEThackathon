@@ -16,6 +16,12 @@ var database = "hackathon"
 var user = "test"
 var password = "test"
 
+type leader struct {
+	UName  string `json:"uname"`
+	Level  string `json:"level"`
+	Points string `json:"points"`
+}
+
 func regHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("uname")
 	pass := r.FormValue("password")
@@ -79,6 +85,35 @@ func susHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, getSeq(username))
+}
+func lbHandler(w http.ResponseWriter, r *http.Request) {
+
+	db, err := sql.Open("mysql", user+":"+password+"@/"+database)
+	if err = db.Ping(); err != nil {
+		log.Print(err)
+		return
+	}
+	defer db.Close()
+
+	var uname, level, time string
+
+	lb := make([]leader, 0, 100)
+	rows, errs := db.Query("select uname, level , time from user order by level DESC, time ASC")
+	if errs != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&uname, &level, &time)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		obj := &leader{UName: uname, Level: level, Points: time}
+		lb = append(lb, *obj)
+	}
+	bjson, _ := json.Marshal(lb)
+	fmt.Fprintf(w, string(bjson))
 }
 
 /////////////////////////////////////////////
@@ -147,6 +182,7 @@ func main() {
 	http.HandleFunc("/reg", regHandler)
 	http.HandleFunc("/seq", seqHandler)
 	http.HandleFunc("/sus", susHandler)
+	http.HandleFunc("/lb", lbHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
