@@ -96,7 +96,13 @@
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="js/mdb.min.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
-
+    <div id="notification" class="container-fluid">
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4" id="notificationArea"></div>
+                    <div class="col-md-4"></div>
+                </div>
+             </div>
 
 </body>
 <style>
@@ -104,17 +110,35 @@ body html{
 margin:0px;
 padding:0px;
 }
+#notification{
+	height:20px;
+	position:fixed;
+	bottom:0%;
+	width:100%;
+	display:none;
+	z-index:15;
+	opacity:0.8;
+}
+#notificationArea{
+	background-color:#222;
+	color:#FFF;
+	size:15px;
+	text-align: center;
+	border-radius: 10px 10px 0px 0px;
+	font-size: 20px;
+}
 </style>
 <script>
+
 	deleteCookie();
 	$("#btnLogin").on("click", function(){
 		user = $("#admin").val();
 		pass = $("#pass").val();
-		$.post("/login/",{username:user, password:pass},function(result){
+		$.post("/login",{uname:user, password:pass},function(result){
 			notify(result);
-			if (result === "Logged in"){
+			if (result != "INVALID"){
 				setUserName(user);
-				window.location = "home.html";
+				window.location = "tiles.html";
 			}
 		});
 	});
