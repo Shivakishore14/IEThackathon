@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- JQuery -->
+    <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
+
+    <title>Tracks</title>
+   	<link rel="stylesheet" href="bs/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="bs/css/bootstrap-theme.css"/>
+	<script src="bs/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+
+    <!-- Your custom styles (optional) -->
+    <link href="css/style.css" rel="stylesheet">
+    <!--fonts-->
+    <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
+
+    <!-- material design-->
+    <link rel="stylesheet" href="mdl/material.min.css">
+    <link rel="stylesheet" type="text/css" href="material.min">
+    <link rel="stylesheet" href="mdl/material1.min.css">
+    <script src="mdl/material.min.js"></script>
+    <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
+
+
+
+</head>
+
+<body style="background:#6E6E6E;font-family: 'Slabo 27px', serif;font-weight:bold; font-size: 30px;">
+
+<div class="container" style="width:400px;">
+
+    <!-- Start your project here-->
+   	<div style="margin-top:150px;margin-left:-50px;background-color:#00BCD4;">
+
+				<!--Sign Up-->
+		<div style="height:20px;"></div>
+			<legend><center>LogIn</center></legend>
+			<div style="height:20px;"></div>
+			<span class="glyphicon glyphicon-user" style="margin-left:20px;"></span>
+			<div class="md-form" style="margin-left:60px;margin-right:60px;margin-top:-40px;">
+
+
+    			<input type="text" id="admin" class="form-control validate">
+    			<label for="admin">Enter User Name!</label>
+			</div>
+			<div style="height:20px;"></div>
+				<!--Password validation-->
+			<span class="glyphicon glyphicon-lock" style="margin-left:20px;"></span>
+			<div class="md-form" style="margin-left:60px;margin-right:60px;margin-top:-40px;">
+
+
+    		<input type="password" id="pass" class="form-control validate">
+    		<label for="pass" >Password</label>
+			</div>
+			<div style="height:20px;"></div>
+    <center>
+		<button type="button" class="btn" style="background:#6E6E6E;" id="btnLogin">LogIn</button>
+
+  </center>
+  <a href="signup.html" style="color:#6E6E6E;font-size:15px;margin-left:250px;">Not Registered? click here!</a>
+
+  <div style="height:20px;"></div>
+			<div style="height:20px;"></div>
+
+	</div>
+
+</div>
+
+    <!-- /Start your project here-->
+
+
+    <!-- SCRIPTS -->
+
+
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="js/tether.min.js"></script>
+
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+
+
+</body>
+<style>
+body html{
+margin:0px;
+padding:0px;
+}
+</style>
+<script>
+	deleteCookie();
+	$("#btnLogin").on("click", function(){
+		user = $("#admin").val();
+		pass = $("#pass").val();
+		$.post("/login/",{username:user, password:pass},function(result){
+			notify(result);
+			if (result === "Logged in"){
+				setUserName(user);
+				window.location = "home.html";
+			}
+		});
+	});
+</script>
+
+</html>
