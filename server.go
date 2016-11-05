@@ -26,10 +26,11 @@ func regHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "error")
 		return
 	}
-
+	var name string
 	defer db.Close()
-	isValid := isLoginValid(username, pass)
-	if isValid {
+	row1 := db.QueryRow("SELECT uname FROM user WHERE uname=?", username)
+	e1 := row1.Scan(&name)
+	if e1 == nil {
 		fmt.Println("registered already", username)
 		fmt.Fprintf(w, "registered already")
 		return
