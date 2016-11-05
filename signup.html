@@ -71,6 +71,8 @@
 		<button type="button" class="btn" style="background:#6E6E6E;" id="btnLogin">Submit</button>
     <button type="button" class="btn" style="background:#6E6E6E;" id="btnCancel">Cancel</button>
   </center>
+  <center>
+    <a href="index.html" style="color:#6E6E6E;font-size:15px;margin-left:230px;">Already Registered? click here!</a></center>
      <div style="height:20px;"></div>
 			<div style="height:20px;"></div>
 	</div>
@@ -125,16 +127,11 @@ padding:0px;
 </style>
 <script>
 	deleteCookie();
-    notify("S");
 	$("#btnLogin").on("click", function(){
 		user = $("#admin").val();
 		pass = $("#pass").val();
 		$.post("/reg",{uname:user, password:pass},function(result){
 			notify(result);
-			if (result === "Logged in"){
-				setUserName(user);
-				window.location = "home.html";
-			}
 		});
 	});
 </script>
