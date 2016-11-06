@@ -86,18 +86,21 @@ func susHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, getSeq(username))
 }
 
-var javaFile string = ""
+var javaFile string
 var jFlag bool = false
+var output string
+var code string
+var cno int
 
 func codeHandler(w http.ResponseWriter, r *http.Request) {
-	code := r.FormValue("code")
+	code1 := r.FormValue("code")
 	name := r.FormValue("name")
 	path := name // linux
 
-	err := ioutil.WriteFile(path+".c", []byte(code), 0777)
-	err = ioutil.WriteFile(path+".cpp", []byte(code), 0777)
-	err = ioutil.WriteFile(path+".rb", []byte(code), 0777)
-	err = ioutil.WriteFile(path+".py", []byte(code), 0777)
+	err := ioutil.WriteFile(path+".c", []byte(code1), 0777)
+	err = ioutil.WriteFile(path+".cpp", []byte(code1), 0777)
+	err = ioutil.WriteFile(path+".rb", []byte(code1), 0777)
+	err = ioutil.WriteFile(path+".py", []byte(code1), 0777)
 
 	if err != nil {
 		log.Print(err)
@@ -108,21 +111,29 @@ func codeHandler(w http.ResponseWriter, r *http.Request) {
 	a := fun1("/usr/bin/gcc", path+".c")
 	if a == 1 {
 		fmt.Fprintf(w, "C")
+		code = "c"
+		cno = 1
 		return
 	}
 	a = fun1("/usr/bin/g++", path+".cpp")
 	if a == 1 {
 		fmt.Fprintf(w, "C++")
+		code = "cpp"
+		cno = 2
 		return
 	}
 	a = fun1("/usr/bin/python", path+".py")
 	if a == 1 {
 		fmt.Fprintf(w, "python")
+		code = ""
+		cno = 0
 		return
 	}
 	a = fun1("/usr/bin/ruby", path+".rb")
 	if a == 1 {
 		fmt.Fprintf(w, "ruby")
+		code = ""
+		cno = 0
 		return
 	}
 	err = ioutil.WriteFile(path+".java", []byte(code), 0777)
@@ -131,14 +142,31 @@ func codeHandler(w http.ResponseWriter, r *http.Request) {
 	if jFlag {
 		path = javaFile
 		fmt.Println("Applying file name to java-->", path)
+		fmt.Println(javaFile + "is last set")
 	}
 	err = ioutil.WriteFile(path+".java", []byte(code), 0777)
 	a = fun1("/usr/bin/javac", path+".java")
 	if a == 1 {
 		fmt.Fprintf(w, "java")
+		code = "java"
+		cno = 100
+		fmt.Printf(code + "is set")
 		return
 	}
-	//fmt.Println(a,b, c)
+	fmt.Println(code)
+}
+
+func outHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(javaFile + "is last set")
+	if cno == 0 {
+		fmt.Fprintf(w, output)
+	} else if cno == 100 {
+		fun1("/usr/bin/java", javaFile)
+		fmt.Fprintf(w, output)
+	} else if cno != 100 {
+		fun1("./a.out", "")
+		fmt.Fprintf(w, output)
+	}
 }
 
 /////////////////////////////////////////////
@@ -148,13 +176,14 @@ func renameFile(s string) string {
 		fmt.Println("error opening file= ", err)
 		os.Exit(1)
 	}
+	fmt.Print("inside rename")
 	r := bufio.NewReader(f)
 	s, e := Readln(r)
 	for e == nil {
 		s, e = Readln(r)
 		if s != "" {
 			k := strings.TrimSpace(s)
-			fmt.Println(k)
+			fmt.Println("after trim", k)
 			return strings.TrimSpace(s)
 		}
 	}
@@ -179,6 +208,7 @@ func Readln(r *bufio.Reader) (string, error) {
 		//fmt.Println(s)
 		fmt.Println("java file name found to be --> ", s)
 		javaFile = strings.TrimSpace(s)
+		fmt.Println(javaFile + "is last set")
 		jFlag = true
 		return s, err
 	}
@@ -192,16 +222,19 @@ func fun(p string, f string) int {
 	if err1 != nil {
 		//log.Fatal(err1)
 	}
+	output = out1.String()
 	fmt.Println(p, out1.String())
 	return len(out1.String())
 }
 func fun1(p string, f string) int {
+	fmt.Println(p, f)
 	cmd, err1 := exec.Command(p, f).Output()
 
 	if err1 != nil {
 		log.Print(err1)
 		return 0
 	}
+	output = string(cmd)
 	fmt.Println(p, string(cmd))
 	return 1
 	//return len(out1.String())
@@ -272,5 +305,6 @@ func main() {
 	http.HandleFunc("/seq", seqHandler)
 	http.HandleFunc("/sus", susHandler)
 	http.HandleFunc("/code", codeHandler)
+	http.HandleFunc("/out", outHandler)
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }

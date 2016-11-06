@@ -39,7 +39,7 @@
 <!--menu -->
     <!-- Display Level-->
     <div id="display">
-      <span style="margin-top:-10px;color:black;font-weight:normal"><label>Level: <span id="disp">0</span></label></span>
+      <span style="margin-top:-10px;color:black;font-weight:normal"><label>Level: &nbsp;<span id="disp">0</span></label></span>
     </div>
 
 </div>
@@ -183,6 +183,9 @@ body{
     .red {
         box-shadow: inset 0 0 0 1000px rgba(0,0,0,.9);
     }
+	.blue {
+        box-shadow: inset 0 0 0 1000px rgba(255,255,255	,.9);
+    }
     #notification{
     	height:20px;
     	position:fixed;
@@ -248,7 +251,11 @@ function seq(a){
 }
 function tileclicked(a){
     var id = a.getAttribute("id");
-    $("#"+id).addClass("red");
+	if ($("#"+id).hasClass("red")){
+		$("#"+id).addClass("blue");
+	}else{
+    	$("#"+id).addClass("red");
+	}
     var last = ans.pop();
     var now = Number(id.charAt(1));
     if (last != now && typeof last != 'undefined'){
@@ -262,6 +269,7 @@ function done(){
     stopTime();
     flag = true;
     $(".tile").removeClass("red");
+	$(".tile").removeClass("blue");
     if (ans.length == Cans.length){
         for( i in ans){
             if(ans[i] != Cans[i]){
@@ -369,7 +377,7 @@ function lb(){
 			<tr>
 			  <td class="mdl-data-table__cell--non-numeric">`+obj[i].uname+`</td>
 			  <td>`+obj[i].level+`</td>
-			  <td>`+obj[i].points+`</td>
+			  <td>`+obj[i].points+`&nbsp; seconds</td>
 			</tr>
 			`;
 		}
