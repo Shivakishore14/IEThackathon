@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -76,7 +77,6 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "error")
 		return
 	}
-	var name string
 	defer db.Close()
 	if username != "" {
 		_, e := db.Exec("insert into userTitle values(?,?,'')", username, title)
@@ -175,7 +175,8 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	rows, errs := db.Query("select msg, status, shared from bucket where title = ?", title)
 	if errs != nil {
 		if errs == sql.ErrNoRows {
-			fmt.Print("nil")
+			fmt.Fprintf(w, "nil")
+			fmt.Println(username, "--> no records")
 			return
 		}
 		log.Fatal(err)
@@ -189,16 +190,17 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 		obj := &item{Msg: msg, Status: status, Shared: shared}
 		listItems = append(listItems, *obj)
 	}
-	bucketobj = &bucket{Title: title, Items: listItems}
+	bucketobj := &bucket{Title: title, Items: listItems}
 	bjson, _ := json.Marshal(bucketobj)
 	fmt.Fprintf(w, string(bjson))
 }
 
-func seqHandler(w http.ResponseWriter, r *http.Request) {
+func urlHandler(w http.ResponseWriter, r *http.Request) {
 	url := r.FormValue("url")
-	a := strings.split(url, "007")
+	a := strings.Split(url, "007")
 	username := a[0]
 	title := a[1]
+	fmt.Println("Decoded", username+" & "+title)
 	db, err := sql.Open("mysql", user+":"+password+"@/"+database)
 	if err = db.Ping(); err != nil {
 		log.Print(err)
@@ -224,7 +226,7 @@ func seqHandler(w http.ResponseWriter, r *http.Request) {
 		obj := &item{Msg: msg, Status: status, Shared: shared}
 		listItems = append(listItems, *obj)
 	}
-	bucketobj = &bucket{Title: title, Items: listItems}
+	bucketobj := &bucket{Title: title, Items: listItems}
 	bjson, _ := json.Marshal(bucketobj)
 	fmt.Fprintf(w, string(bjson))
 }

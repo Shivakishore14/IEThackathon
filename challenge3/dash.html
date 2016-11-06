@@ -1,11 +1,8 @@
 <html>
 <head>
 	<title>Madness</title>
-	<link rel="stylesheet" href="css/bootstrap.min.css"/>
-	<link rel="stylesheet" href="css/bootstrap-theme.css"/>
 	<script src="js/jquery.js"></script>
 	<script src="js/script.js"></script>
-	<script src="js/bootstrap.min.js" type="text/javascript"></script>
     <!--fonts-->
     <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
@@ -24,24 +21,11 @@
 	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
 	            mdl-layout--fixed-header">
 	  <header class="mdl-layout__header">
-	    <div class="mdl-layout__header-row">
-	      <div class="mdl-layout-spacer"></div>
-	      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
-	                  mdl-textfield--floating-label mdl-textfield--align-right">
-	        <label class="mdl-button mdl-js-button mdl-button--icon"
-	               for="fixed-header-drawer-exp">
-	          <i class="material-icons">search</i>
-	        </label>
-	        <div class="mdl-textfield__expandable-holder">
-	          <input class="mdl-textfield__input" type="text" name="sample"
-	                 id="fixed-header-drawer-exp">
-	        </div>
-	      </div>
-	    </div>
+	    <!-- user -->
 	  </header>
 	  <div class="mdl-layout__drawer">
-	    <span class="mdl-layout-title">Title</span>
-	    <nav class="mdl-navigation">
+	    <span class="mdl-layout-title" id="Logo">Buckets</span>
+	    <nav class="mdl-navigation" id="bucketList">
 	      <a class="mdl-navigation__link" href="">Link</a>
 	      <a class="mdl-navigation__link" href="">Link</a>
 	      <a class="mdl-navigation__link" href="">Link</a>
@@ -49,7 +33,17 @@
 	    </nav>
 	  </div>
 	  <main class="mdl-layout__content">
-	    <div class="page-content"><!-- Your content goes here --></div>
+	    <div class="page-content">
+			<h2 id="title"></h2>
+
+
+
+
+			<center>
+    			<button type="button" class="btn" id="btnCreate">Create New</button>
+  			</center>
+			
+		</div>
 	  </main>
 	</div>
 <!-- Modal -->
@@ -93,7 +87,6 @@ label,h1{
 font-size: 20px;
 }
 span{
-  color:white;
   font-weight: bold;
 }
 
@@ -170,6 +163,56 @@ body{
 	#stw{
 		padding-left: 88px;
 	}
+	@font-face {
+        font-family: 'Material Icons';
+        font-style: normal;
+        font-weight: 400;
+        src: url(MaterialIcons-Regular.eot); /* For IE6-8 */
+        src: local('Material Icons'),
+             local('MaterialIcons-Regular'),
+             url(https://rawgit.com/google/material-design-icons/master/iconfont/MaterialIcons-Regular.woff2) format('woff2'),
+             url(https://rawgit.com/google/material-design-icons/master/iconfont/MaterialIcons-Regular.woff) format('woff'),
+             url(https://rawgit.com/google/material-design-icons/master/iconfont/MaterialIcons-Regular.ttf) format('truetype');
+      }
+
+      .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;  /* Preferred icon size */
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+
+        /* Support for all WebKit browsers. */
+        -webkit-font-smoothing: antialiased;
+        /* Support for Safari and Chrome. */
+        text-rendering: optimizeLegibility;
+
+        /* Support for Firefox. */
+        -moz-osx-font-smoothing: grayscale;
+
+        /* Support for IE. */
+        font-feature-settings: 'liga';
+      }
+	  .demo-card-wide.mdl-card {
+   width: 95%;
+   margin-left: 30px;
+   margin-top: 20px;
+ }
+.demo-card-wide > .mdl-card__title {
+  color: #fff;
+  background: url('../assets/demos/welcome_card.jpg') center / cover;
+}
+.demo-card-wide > .mdl-card__menu {
+  color: #fff;
+}
 </style>
 <script>
 validate();
@@ -180,130 +223,21 @@ var ans = new Array();
 var c = 0;
 var Cans;
 var points=0;
-setTimeout(startFun,1000);
-function startFun(){
-    $("#btnReload").trigger("click");
-}
-$("#btnReload").on("click", function(){
-    stopTime();
-    $.post("/seq",{uname:uname},function(result){
-            seq(result);
-    });
+
+$.post("/list",{uname:uname},function(result){
+		//alert(result);
+		var list = JSON.parse(result);
+		s = '';
+		for (i in list){
+			s = s + '<a class="mdl-navigation__link" href="">'+link[i]+'</a>';
+		}
+		$("#bucketList").html(s);
 });
+
 $("#logout").on("click",function(){
     window.location = "index.html";
 });
-function seq(a){
-    c = 0;
-    var s = JSON.parse(a);
-    console.log(s);
-    $("#disp").html(s.length);
-    Cans = s;
-    showTile();
-}
-function tileclicked(a){
-    var id = a.getAttribute("id");
-    $("#"+id).addClass("red");
-    var last = ans.pop();
-    var now = Number(id.charAt(1));
-    if (last != now && typeof last != 'undefined'){
-        ans.push(last);
-    }
-    ans.push(now);
-    console.log(ans)
-}
-function done(){
-    var p = points;
-    stopTime();
-    flag = true;
-    $(".tile").removeClass("red");
-    if (ans.length == Cans.length){
-        for( i in ans){
-            if(ans[i] != Cans[i]){
-                flag = false;
-            }
-        }
-    }else{
-        flag = false;
-    }
-    stopTime();
-    if (flag){
-        ans = [];
-        $.post("/sus",{uname:uname,level:Cans.length,pts:p},function(result){
-                Cans = [];
-        });
-        notify("Correct");
-    }else{
-        notify("Wrong");
-    }
-    ans = [];
-    setTimeout(startFun, 1000);
-}
 
-function showTile(){
-    if (c < Cans.length){
-        $(".tile").removeClass("red");
-        $("#t"+Cans[c]).addClass("red");
-        c = c + 1;
-        setTimeout(showTile, 500);
-    }else{
-        $(".tile").removeClass("red");
-        stopTime();
-        clearTime();
-        timer();
-    }
-
-}
-
-
-
-
-var h1 = document.getElementsByTagName('h1')[0],
-    start = document.getElementById('start'),
-    stop = document.getElementById('stop'),
-    clear = document.getElementById('clear'),
-    seconds = 0, minutes = 0, hours = 0,
-    t;
-
-function add() {
-    points++;
-    seconds++;
-    if (seconds >= 60) {
-        seconds = 0;
-        minutes++;
-        if (minutes >= 60) {
-            minutes = 0;
-            hours++;
-        }
-    }
-
-    h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
-
-    timer();
-}
-function timer() {
-    t = setTimeout(add, 1000);
-}
-
-
-
-/* Start button */
-start.onclick = timer;
-
-/* Stop button */
-stop.onclick =  stopTime;
-function stopTime()  {
-    points = 0;
-    clearTimeout(t);
-}
-
-/* Clear button */
-clear.onclick = clearTime();
-function clearTime() {
-    points = 0;
-    h1.textContent = "00:00:00";
-    seconds = 0; minutes = 0; hours = 0;
-}
 function lb(){
 	s = `
 	<table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" id="modalTable">
